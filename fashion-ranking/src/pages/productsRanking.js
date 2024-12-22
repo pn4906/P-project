@@ -14,8 +14,8 @@ const FashionRankingTable = () => {
     const [minPrice, setMinPrice] = useState(2000); // 초기 최소값
     const [maxPrice, setMaxPrice] = useState(254000); // 초기 최대값
 
-    const [initalMinPrice, setInitalMinPrice] = useState(); // 제일 상품 가격 낮은 값 
-    const [initalMaxPrice, setInitalMaxPrice] = useState(); // 제일 상품 가격 높은 값 
+    const [initalMinPrice, setInitialMinPrice] = useState(); // 제일 상품 가격 낮은 값 
+    const [initalMaxPrice, setInitialMaxPrice] = useState(); // 제일 상품 가격 높은 값 
 
     // 가격 설정 탭 오픈 여부   
     const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
@@ -23,18 +23,17 @@ const FashionRankingTable = () => {
         setIsPriceModalOpen(!isPriceModalOpen);
     };
 
-    // 1. 사용자가 가격 설정 바꿨을때의 함수 
+
     const handleMinPriceChange = (e) => {
-        const value = Math.min(Number(e.target.value), maxPrice - 1000); // 최소값은 최대값보다 작아야 함
+        const value = Math.min(Number(e.target.value), maxPrice - 1000);
         setMinPrice(value);
     };
 
     const handleMaxPriceChange = (e) => {
-        const value = Math.max(Number(e.target.value), minPrice + 1000); // 최대값은 최소값보다 커야 함
+        const value = Math.max(Number(e.target.value), minPrice + 1000);
         setMaxPrice(value);
     };
 
-    // 2. 슬라이더 값 바꿀때 
     const handleSliderChange = (e, type) => {
         const slider = document.querySelector('.price-slider');
         slider.style.setProperty('--min-value', minPrice); // 최소값
@@ -47,21 +46,18 @@ const FashionRankingTable = () => {
         }
     };
 
-    // 가격 필터링시 일치하는 상품만 보이게 설정 
     const filterByPrice = (data, minPrice, maxPrice) => {
         return data.filter(product => {
             return product.price >= minPrice && product.price <= maxPrice;
         });
     };
 
-    // 2. 설정하기 버튼 클릭 시 필터링 로직 적용
     const applyPriceFilter = () => {
         const filteredData = filterByPrice(data, minPrice, maxPrice);
         setFilterdData(filteredData); // 필터링된 데이터를 저장
         setIsPriceModalOpen(false); // 모달 닫기
     };
 
-    // 데이터 fetch
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -70,25 +66,15 @@ const FashionRankingTable = () => {
                 const subcategory = searchParams.get('subcategory');
                 const finalSubcategory = subcategory === 'undefined' || !subcategory ? 'all' : subcategory.toLowerCase();
 
-                // 검색어 길이 체크
                 if (keyword && keyword.trim().length === 0) {
                     setError('검색어를 입력해주세요.');
                     setLoading(false);
                     return;
                 }
 
-                console.log('URL Parameters:', JSON.stringify({
-                    keyword: keyword || 'null',
-                    category,
-                    subcategory: finalSubcategory
-                }, null, 2));
-
-                // 검색어가 있을 때는 검색 API를, 없을 때는 카테고리 API를 호출
                 const apiUrl = keyword && keyword.trim().length > 0
-                    ? `${process.env.REACT_APP_API_URL}/search/${encodeURIComponent(keyword)}`
-                    : `${process.env.REACT_APP_API_URL}?category=${category}&subcategory=${finalSubcategory}`;
-
-                console.log('API URL:', apiUrl);
+                    ? `${process.env.REACT_APP_API_URL}search/${encodeURIComponent(keyword)}`
+                    : `${process.env.REACT_APP_API_URL}ranking?category=${category}&subcategory=${finalSubcategory}`;
 
                 const response = await fetch(apiUrl, {
                     method: 'GET',
@@ -104,37 +90,21 @@ const FashionRankingTable = () => {
 
                 const responseData = await response.json();
 
-                // 응답 데이터 로그
-                console.log('API Response Details:', JSON.stringify({
-                    status: response.status,
-                    success: responseData.success,
-                    totalItems: responseData.data?.length,
-                    sampleItems: responseData.data?.slice(0, 2).map(item => ({
-                        product_id: item.product_id,
-                        product_name: item.product_name,
-                        brand: item.brand
-                    }))
-                }, null, 2));
-
                 if (!responseData || !Array.isArray(responseData.data)) {
-                    console.error('Invalid response format:', JSON.stringify(responseData, null, 2));
                     throw new Error('API 응답 데이터 형식이 올바르지 않습니다.');
                 }
 
-                // 카테고리별 최저, 최고 가격 구하여 저장 
-                const prices = responseData.data.map(item => item.price); // 데이터에서 price 값만 추출
-                const minPrice = Math.floor(Math.min(...prices) / 1000) * 1000; // 최저 가격을 1000원 단위로 내림
-                const maxPrice = Math.ceil(Math.max(...prices) / 1000) * 1000; // 최고 가격을 1000원 단위로 올림
+                const prices = responseData.data.map(item => item.price);
+                const minPrice = Math.floor(Math.min(...prices) / 1000) * 1000;
+                const maxPrice = Math.ceil(Math.max(...prices) / 1000) * 1000;
 
-                setInitalMinPrice(minPrice);
-                setInitalMaxPrice(maxPrice);
+                setInitialMinPrice(minPrice);
+                setInitialMaxPrice(maxPrice);
                 setMinPrice(minPrice);
                 setMaxPrice(maxPrice);
 
-                // 받은 상품 보를 저장
                 setData(responseData.data);
                 setFilterdData(responseData.data);
-                console.log('Data updated with', responseData.data.length, 'items');
                 setLoading(false);
             } catch (err) {
                 console.error('Error in fetchData:', err);
@@ -146,7 +116,6 @@ const FashionRankingTable = () => {
         fetchData();
     }, [searchParams]);
 
-    // 정렬된 데이터 계산
     const sortedData = useMemo(() => {
         return [...filterdData].sort((a, b) => {
             if (sortOption === 'ranking') {
@@ -180,17 +149,17 @@ const FashionRankingTable = () => {
         <div className="ranking-container">
             
             <div className="price-filter-container">
-            <div className="sort-container">
-                <select
-                    name="sort_product"
-                    value={sortOption}
-                    onChange={(e) => setSortOption(e.target.value)}
-                >
-                    <option value="ranking">랭킹순</option>
-                    <option value="review">리뷰 많은순</option>
-                    <option value="positive">긍정 비율순</option>
-                </select>
-            </div>
+                <div className="sort-container">
+                    <select
+                        name="sort_product"
+                        value={sortOption}
+                        onChange={(e) => setSortOption(e.target.value)}
+                    >
+                        <option value="ranking">랭킹순</option>
+                        <option value="review">리뷰 많은순</option>
+                        <option value="positive">긍정 비율순</option>
+                    </select>
+                </div>
                 <button className="price-button" onClick={() => setIsPriceModalOpen(!isPriceModalOpen)}>
                     <i className="fas fa-filter"></i>가격 필터
                 </button>
@@ -203,7 +172,7 @@ const FashionRankingTable = () => {
                     </div>
                 </div>
             </div>
-
+    
             {/* 가격 범위 설정 창 */}
             {isPriceModalOpen && (
                 <div className="price-modal">
@@ -214,7 +183,6 @@ const FashionRankingTable = () => {
                         </button>
                     </div>
                     <div className="price-modal-body">
-
                         {/* 1. 최소 가격 */}
                         <div className="price-inputs">
                             <div className='price-explain'>가격은 천원단위로 입력해주세요.</div>
@@ -224,7 +192,7 @@ const FashionRankingTable = () => {
                                 min="0"
                                 onChange={handleMinPriceChange}
                             />
-                            <span class="unit1">원</span>
+                            <span className="unit1">원</span>
                             <span> ~ </span>
                             <input
                                 type="number"
@@ -232,9 +200,8 @@ const FashionRankingTable = () => {
                                 min="0"
                                 onChange={handleMaxPriceChange}
                             />
-                            <span class="unit2">원</span>
+                            <span className="unit2">원</span>
                         </div>
-
                         {/* 2. 가격 슬라이더 */}
                         <div className="price-slider">
                             <input className='price-min'
@@ -249,7 +216,6 @@ const FashionRankingTable = () => {
                                 type="range"
                                 min={initalMinPrice}
                                 max={initalMaxPrice}
-
                                 step="1000"
                                 value={maxPrice}
                                 onChange={(e) => handleSliderChange(e, 'max')}
@@ -266,9 +232,7 @@ const FashionRankingTable = () => {
                     </div>
                 </div>
             )}
-
-            
-
+    
             <div className="top-three">
                 {sortedData.slice(0, 3).map((product, index) => {
                     const likes = product.positive_rate;
@@ -333,7 +297,7 @@ const FashionRankingTable = () => {
                     );
                 })}
             </div>
-
+    
             <div className="bottom-groups">
                 {[...Array(Math.ceil((sortedData.length - 3) / 5))].map((_, groupIndex) => (
                     <div className="bottom-group" key={groupIndex}>

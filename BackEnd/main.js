@@ -1,51 +1,35 @@
 const express = require('express');
-var session = require('express-session');
-var MySqlStore = require('express-mysql-session')(session);
-var bodyParser = require('body-parser');
-const app = express();
+const path = require('path');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 
-// 포트 설정
+// 라우터 불러오기
+const rankingRouter = require('./Routes/rankingRouter');
+const productRouter = require('./Routes/ProductDetailRouter');
+const searchRouter = require('./Routes/searchRouter');
+
+const app = express(); // app 초기화
 const port = 60029;
 
-app.use(express.static('public'));
-app.use(cors()); // 모든 도메인의 요청 허용
-
-// 라우터 불러오기
-var rankingRouter = require('./Routes/rankingRouter');
-var productRouter = require('./Routes/ProductDetailRouter');
-var searchRouter = require('./Routes/searchRouter');  
-// 세션 스토어 설정
-var options = {
-    host: 'localhost',
-    user: 'dbid233',
-    password: 'dbpass233',
-    database: 'db24329',
-};
-var sessionStore = new MySqlStore(options);
-
-app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-    store: sessionStore
-}));
-
-// 뷰 엔진 설정
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-
+// Middleware 설정
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 
-// 라우터 연결
-app.use('/search', searchRouter);  // 검색 라우터를 먼저 등록
-app.use('/', rankingRouter);       // 그 다음 기본 라우터
-app.use('/products', productRouter);
-// favicon 요청 무시
-app.get('/favicon.ico', (req, res) => res.status(204).end());
+// API 요청 라우터 연결 (모든 API 요청은 /api 경로 사용)
+app.use('/api/ranking', rankingRouter);
+app.use('/api/products', productRouter);
+app.use('/api/search', searchRouter);
+
+// 정적 파일 제공 (React 빌드 파일)
+app.use(express.static(path.join(__dirname, 'fashion-ranking-build')));
+
+// React SPA 처리 (정적 파일 제외한 모든 요청을 index.html로 리다이렉트)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'fashion-ranking-build', 'index.html'));
+});
 
 // 서버 실행
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
+    console.log(`Server running at http://ceprj.gachon.ac.kr:${port}`);
 });

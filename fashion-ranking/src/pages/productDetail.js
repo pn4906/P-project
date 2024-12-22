@@ -77,7 +77,7 @@ const ProductDetail = () => {
    // 백엔드에서 리뷰 데이터 불러오기
   const fetchReviews = async () => {
     try {
-      const url = `http://ceprj.gachon.ac.kr:60029/products/${product_id}`;
+      const url = `/api/products/${product_id}`; // API 경로 변경
       const response = await fetch(url);
       if (!response.ok) throw new Error('리뷰 데이터를 불러오는데 실패했습니다.');
 

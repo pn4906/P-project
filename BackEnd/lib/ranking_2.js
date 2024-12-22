@@ -3,29 +3,38 @@ const db = require('./db'); // 데이터베이스 연결
 module.exports = {
     // 상품 목록 조회
     view: (req, res) => {
-        // main_category와 sub_category 값 처리
-        let mainCategory = req.query.category || 'best'; // 기본값: 'best'
-        let subCategory = req.query.subcategory || 'all'; // 기본값: 'all'
-        console.log("Received Parameters:", { mainCategory, subCategory });
-
         const mainCategoryMapping = {
             "best": null,  // 전체
-            "men": 0,    // 남성
-            "women": 1   // 여성
+            "men": 0,      // 남성
+            "women": 1     // 여성
         };
-
+        
         const subCategoryMapping = {
             "all": null,   // 전체
-            "top": 1,    // 상의
-            "outer": 2,  // 아우터
-            "bottom": 3, // 하의
-            "shoes": 4   // 신발
+            "top": 1,      // 상의
+            "outer": 2,    // 아우터
+            "bottom": 3,   // 하의
+            "shoes": 4     // 신발
         };
-
-        // 매핑된 값 적용
-        mainCategory = mainCategoryMapping[mainCategory.toLowerCase()] || null;
-        subCategory = subCategoryMapping[subCategory.toLowerCase()] || null;
-
+        
+        // mainCategory와 subCategory 값 처리
+        let mainCategory = req.query.category || 'best'; // 기본값: 'best'
+        let subCategory = req.query.subcategory || 'all'; // 기본값: 'all'
+        
+        console.log("Received Parameters:", { mainCategory, subCategory });
+        
+        // 매핑 적용 시 소문자 변환하여 처리
+        mainCategory = mainCategory.toLowerCase();  // 소문자로 변환
+        subCategory = subCategory.toLowerCase();    // 소문자로 변환
+        
+        console.log("After lowercasing:", { mainCategory, subCategory });
+        
+        // 매핑 적용
+        mainCategory = mainCategoryMapping[mainCategory]; // 매핑된 값을 가져옴
+        subCategory = subCategoryMapping[subCategory];    // 매핑된 값을 가져옴
+        
+        console.log("Mapped mainCategory:", mainCategory);  // 매핑된 main_category 값 확인
+        console.log("Mapped subCategory:", subCategory);    // 매핑된 sub_category 값 확인
         const query1 = `
             SELECT 
                 P.*, PD.* 
@@ -48,11 +57,6 @@ module.exports = {
             LIMIT 300
         `;
 
-        const query2 = `
-            select MIN(price), MAX(price) 
-            from products_detail 
-            where 
-        `
         const params = [mainCategory, mainCategory, subCategory, subCategory];
 
         db.query(query1, params, (err, results) => {
@@ -130,7 +134,8 @@ module.exports = {
                 return res.status(500).json({ success: false, error: "Database error occurred" });
             }
 
-            console.log("Query results:", results?.length || 0);
+            // 검색 결과를 콘솔에 출력
+            console.log("검색 결과:", results);
 
             if (results.length === 0) {
                 return res.status(404).json({
