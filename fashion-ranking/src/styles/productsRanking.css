@@ -1,0 +1,694 @@
+/* 전체 컨테이너 */
+.ranking-container {
+    max-width: 1850px;
+    margin: 0 auto;
+    padding: 40px 40px;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* 1-3위 레이아웃 */
+.top-three {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 60px;
+    margin-bottom: 30px;
+}
+
+/* 4위 이후 그룹화 */
+.bottom-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+/* 600px 이상일 때 3개 컬럼 */
+@media screen and (min-width: 600px) {
+    .bottom-groups {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 900px 이상일 때 4개 컬럼 */
+@media screen and (min-width: 900px) {
+    .bottom-groups {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* 1200px 이상일 때 5개 컬럼 */
+@media screen and (min-width: 1200px) {
+    .bottom-groups {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* bottom-group 클래스 제거 또는 아래와 같이 수정 */
+.bottom-group {
+    display: contents;
+    /* 그리드 아이템을 부모 그리드에 직접 배치 */
+}
+
+@media screen and (min-width: 1200px) {
+    .bottom-group {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* 공통 아이템 스타일 */
+/* 전체 상품 아이템 컨테이너 */
+.product-item {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    /* 최대 너비 제한 */
+    margin: 0 auto;
+    /* 중앙 정렬 */
+}
+
+.product-image-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    /* 1:1 비율 유지 */
+    overflow: hidden;
+}
+
+.product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* 이미지 비율 유지하면서 컨테이너 채우기 */
+}
+
+/* 상위 3개 상품의 이미지 크기 조정 */
+.top-three .product-image-container {
+    padding-bottom: 120%;
+    /* 상위 3개는 좀 더 세로로 길게 */
+}
+
+/* 나머지 상품들의 이미지 크기 */
+.bottom-groups .product-image-container {
+    padding-bottom: 100%;
+    /* 1:1 비율 */
+}
+
+/* 랭킹 뱃지 스타일 추가 */
+.rank-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 1);
+    color: white;
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.9em;
+    z-index: 1;
+}
+
+/* 상위 3개 상품 스타일 */
+.top-three .product-image-container {
+    padding-bottom: 120%;
+}
+
+.top-three .rank-badge {
+    width: 62px;
+    height: 62px;
+    font-size: 1.9em;
+}
+
+/* 나머지 상품들 스타일 */
+.bottom-groups .product-image-container {
+    padding-bottom: 100%;
+}
+
+/* 상품 정보 스타일 */
+.product-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.product-info {
+    flex: 1;
+    margin-right: 15px;
+}
+
+.brand {
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.title {
+    margin: 5px 0;
+}
+
+.price-info {
+    margin: 5px 0;
+}
+
+.social-info {
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* Link 컴포넌트 스타일 */
+.product-details a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.product-details a:visited {
+    color: inherit;
+}
+
+.product-details a:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+.product-details a:active {
+    color: inherit;
+}
+
+.product-details .brand {
+    font-size: 14px;
+}
+
+.product-details a .title {
+    font-size: 20px;
+}
+
+.social-chart {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+    position: absolute;
+    width: 80px;
+    height: 80px;
+}
+
+.progress-ring-circle {
+    fill: transparent;
+    stroke-width: 5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s ease-in-out;
+}
+
+@keyframes progressAnimation {
+    from {
+        stroke-dashoffset: 226.19;
+        /* 원의 전체 둘레 */
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.progress-ring-background {
+    stroke: #f2f2f2;
+}
+
+.progress-ring-progress {
+    stroke: #4e7fff;
+    animation: progressAnimation 1.2s ease-out forwards;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out 0.8s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.review-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+
+.review-icon {
+    width: 13px;
+    height: 13px;
+    opacity: 0.6;
+    margin-right: -1px;
+}
+
+.progress-text .review-count {
+    font-size: 13px;
+    color: #666;
+    line-height: 1;
+}
+
+.progress-ring-progress.excellent {
+    stroke: #4e7fff;
+    /* 95-100% */
+}
+
+.progress-ring-progress.great {
+    stroke: #6989ff;
+    /* 90-94% */
+}
+
+.progress-ring-progress.good {
+    stroke: #8499ff;
+    /* 85-89% */
+}
+
+.progress-ring-progress.fair {
+    stroke: #9fb3ff;
+    /* 80-84% */
+}
+
+.progress-ring-progress.poor {
+    stroke: #bac5ff;
+    /* 70-79% */
+}
+
+.progress-text .percent {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.progress-text .percent .percent-sign {
+    font-size: 13px;
+    vertical-align: top;
+    position: relative;
+    top: 2px;
+}
+
+.search-container {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 0;
+    padding: 8px 32px 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #666;
+}
+
+.search-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.search-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* 검색창이 보일 때의 스타일 */
+.search-container .search-input {
+    width: 200px;
+    opacity: 1;
+    margin-right: 8px;
+}
+
+/* 상품 정렬 CSS */
+.sort-product {
+    
+    display: flex;
+    justify-content: flex-end;
+    /* 오른쪽 정렬 */
+    align-items: center;
+    /* 수직 가운데 정렬 */
+    padding-right: 120px;
+    /* 오른쪽 패딩 추가 */
+    
+}
+
+.sort-product select {
+    font-size: 16px;
+    /* 글자 크기 조정 */
+    padding: 5px 10px;
+    /* 내부 여백 추가 */
+    border-radius: 5px;
+    /* 둥근 모서리 */
+    border: 1px solid #ccc;
+    /* 테두리 색 */
+    background-color: #f9f9f9;
+    /* 배경 색 */
+    cursor: pointer;
+    /* 포인터 변경 */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    /* 그림자 추가 */
+}
+
+.sort-product select:hover {
+    background-color: #eaeaea;
+    /* 호버 시 배경 색 변경 */
+}
+
+
+
+/* ==== 가격 설정 ===== */
+.price-filter-container {
+    display: flex;
+    align-items: center;
+}
+
+.price-range {
+    margin-left: 10px; /* 버튼과 텍스트 사이의 간격 조정 */
+}
+.price-button {
+    width: 100px; /* 버튼 너비 */
+    height: 30px; /* 버튼 높이 */
+    padding: 0; /* 패딩 제거 */
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.price-button i {
+    color: inherit;
+    margin-right: 5px; /* 아이콘과 텍스트 사이 간격 */
+}
+
+.price-button:hover {
+    background-color: #4e7fff; /* 호버 시 배경색 */
+}
+
+/* 가격 모달 */
+.price-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* 모달 헤더 */
+.price-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* 모달 바디 */
+.price-modal-body {
+    flex: 1;
+    padding: 20px;
+}
+
+.price-inputs>* {
+    margin-bottom: 25px;
+}
+
+.price-explain {
+    margin-top: 20px;
+    font-size: 17px;
+}
+
+
+/* 가격 설정 태그들  */
+.price-inputs input {
+    width: 35%;
+    padding: 15px;
+    margin-top: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+}
+
+/* "원" 위치 조정 */
+.price-inputs .unit1 {
+    position: relative;
+    right: 30px;
+    font-size: 17px;
+    color: #333;
+}
+
+.price-inputs .unit2 {
+    position: relative;
+    right: -325px;
+    top: -63px;
+    font-size: 17px;
+    color: #333;
+}
+
+
+
+/* ======================== */
+
+/* 가격 슬라이더  */
+
+.price-slider {
+    position: relative;
+    height: 10px;
+}
+
+.price-min,
+.price-max {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+}
+
+.price-min::-webkit-slider-thumb,
+.price-max::-webkit-slider-thumb {
+    pointer-events: auto;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: black;
+    cursor: pointer;
+    border: none;
+    position: relative;
+    top: -4px;
+}
+
+.price-min::-webkit-slider-thumb {
+    z-index: 2;
+}
+
+.price-max::-webkit-slider-thumb {
+    z-index: 1;
+}
+
+.price-slider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: lightgray;
+    /* 비활성화 영역 */
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.price-slider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc((var(--min-value, 0) / 254000) * 100%);
+    right: calc(100% - (var(--max-value, 254000) / 254000) * 100%);
+    height: 2px;
+    background: black;
+    /* 활성화 영역 */
+    transform: translateY(-50%);
+    z-index: 2;
+}
+
+
+
+
+/* ======== */
+
+/* 모달 푸터 */
+.price-modal-footer {
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+}
+
+.apply-button,
+.cancel-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.apply-button {
+    width: 100px; /* 버튼 너비 */
+    height: 30px; /* 버튼 높이 */
+    padding: 0; /* 패딩 제거 */
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    color: black; /* 텍스트 색상 */
+    
+}
+
+.apply-button:hover {
+    background-color: #4e7fff; /* 호버 시 배경색 */
+    color: white; /* 호버 시 텍스트 색상 */
+}
+
+.cancel-button {
+    width: 100px; /* 버튼 너비 */
+    height: 30px; /* 버튼 높이 */
+    padding: 0; /* 패딩 제거 */
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    background: #ddd;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    color: black; /* 텍스트 색상 */
+}
+
+.cancel-button:hover {
+    background-color: #4e7fff; /* 호버 시 색상 변경 */
+}
+
+
+/* fashion-ranking/src/styles/productsRanking.css */
+.price-range-card {
+    height: 10px; /* 버튼 높이 */
+    background-color: #eaeaea; /* 버튼과 같은 배경색 */
+    border-radius: 20px; /* 버튼과 같은 테두리 반경 */
+    padding: 10px 20px; /* 버튼과 유사한 패딩 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    margin-left: 10px; /* 가격 필터 버튼과의 간격 추가 */
+}
+
+.price-range-header {
+    margin-right: 10px;
+    font-size: 13px;
+}
+
+.price-range-values {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.price-value {
+    font-weight: bold;
+    color:#4e7fff;
+}
+
+.price-separator {
+    margin: 0 5px;
+}
+
+.sort-container {
+    display: flex;
+    align-items: center;
+    gap: 40px; /* 간격 추가 */
+}
+
+.sort-container select {
+    width: 130px;
+    height: 29px;
+    margin-right: 13px;
+    font-size: 13px;
+    padding: 5px 10px;
+    border-radius: 20px; /* 둥근 모서리 */
+    border: 1px solid #e0e0e0;
+    background-color: white;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+}
+
+.price-filter-container {
+    margin-bottom: 20px;
+}
